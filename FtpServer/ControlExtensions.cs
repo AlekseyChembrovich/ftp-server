@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace FtpServer;
+﻿namespace FtpServer;
 
 internal static class ControlExtensions
 {
@@ -9,10 +6,8 @@ internal static class ControlExtensions
     {
         FtpCommandType.USER => $"331 Login {command.Value} is correct.",
         FtpCommandType.PASS => $"230 Password {command.Value} is correct.",
-        // FtpCommandType.TYPE => $"200 Type {command.Value} is set.",
         FtpCommandType.SYST => "215 Windows_NT",
         FtpCommandType.PWD => "257 /",
-        // FtpCommandType.CWD => $"250 {command.Value} is the current directory.",
         _ => $"502 Command {command.Type.ToString()} not implemented."
     };
 
@@ -31,25 +26,27 @@ internal static class ControlExtensions
         _ => throw new ArgumentException($"Unsupported transfer type: {value}.")
     };
 
-    private static FtpCommandType ParseFtpCommandType(string command) => command switch
+    private static FtpCommandType ParseFtpCommandType(string command) => command.ToLower() switch
     {
-        "AUTH" => FtpCommandType.AUTH,
-        "USER" => FtpCommandType.USER,
-        "PASS" => FtpCommandType.PASS,
-        "TYPE" => FtpCommandType.TYPE,
-        "FEAT" => FtpCommandType.FEAT,
-        "SYST" => FtpCommandType.SYST,
-        "PWD" => FtpCommandType.PWD,
-        "CWD" => FtpCommandType.CWD,
-        "PASV" => FtpCommandType.PASV,
-        "LIST" => FtpCommandType.LIST,
-        "RETR" => FtpCommandType.RETR,
-        "RNFR" => FtpCommandType.RNFR,
-        "RNTO" => FtpCommandType.RNTO,
-        "STOR" => FtpCommandType.STOR,
-        "DELE" => FtpCommandType.DELE,
-        "MKD" => FtpCommandType.MKD,
-        "SIZE" => FtpCommandType.SIZE,
-        _ => throw new ArgumentException($"Unsupported command type: {command}.")
+        "opts" => FtpCommandType.OPTS,
+        "auth" => FtpCommandType.AUTH,
+        "user" => FtpCommandType.USER,
+        "pass" => FtpCommandType.PASS,
+        "type" => FtpCommandType.TYPE,
+        "feat" => FtpCommandType.FEAT,
+        "syst" => FtpCommandType.SYST,
+        "pwd" => FtpCommandType.PWD,
+        "cwd" => FtpCommandType.CWD,
+        "port" => FtpCommandType.PORT,
+        "pasv" => FtpCommandType.PASV,
+        "list" => FtpCommandType.LIST,
+        "retr" => FtpCommandType.RETR,
+        "rnfr" => FtpCommandType.RNFR,
+        "rnto" => FtpCommandType.RNTO,
+        "stor" => FtpCommandType.STOR,
+        "dele" => FtpCommandType.DELE,
+        "mkd" => FtpCommandType.MKD,
+        "size" => FtpCommandType.SIZE,
+        _ => FtpCommandType.NONE
     };
 }

@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using FtpServer.Files;
+﻿using FtpServer.Files;
 using FtpServer.Connection;
 
 namespace FtpServer.Handlers;

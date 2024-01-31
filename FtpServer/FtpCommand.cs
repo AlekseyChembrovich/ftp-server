@@ -2,6 +2,7 @@
 
 internal enum FtpCommandType
 {
+    OPTS, // TODO: need to be implemented
     AUTH,
     USER,
     PASS,
@@ -10,6 +11,7 @@ internal enum FtpCommandType
     SYST,
     PWD,
     CWD,
+    PORT, // TODO: need to be implemented
     PASV,
     LIST,
     RETR,
@@ -18,7 +20,8 @@ internal enum FtpCommandType
     STOR,
     DELE,
     MKD,
-    SIZE
+    SIZE,
+    NONE
 }
 
 internal enum TransferType

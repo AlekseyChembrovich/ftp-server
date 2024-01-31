@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using FtpServer.Files;
 using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FtpServer.Connection;
 
@@ -59,17 +54,11 @@ internal class FtpConnection : IFtpConnection
     {
         try
         {
-            Console.WriteLine("Test 1");
-            
             await SendAsync("220 Welcome to the FTP Server.", token);
-            
-            Console.WriteLine("Test 2");
             
             string? line;
             while (!string.IsNullOrWhiteSpace(line = await _reader.ReadLineAsync(token)))
             {
-                Console.WriteLine("Test 3");
-                
                 Console.WriteLine(line);
 
                 var ftpCommand = line.ParseFtpCommand();
@@ -114,7 +103,7 @@ internal class FtpConnection : IFtpConnection
     public void Dispose()
     {
         _networkStream.Dispose();
-        _writer.Dispose(); // Overhead?
-        _reader.Dispose(); // Overhead?
+        _writer.Dispose(); // TODO: Overhead?
+        _reader.Dispose(); // TODO: Overhead?
     }
 }

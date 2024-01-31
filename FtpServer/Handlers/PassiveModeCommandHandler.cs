@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Net;
 using FtpServer.Connection;
 
 namespace FtpServer.Handlers;
@@ -18,6 +15,7 @@ internal class PassiveModeCommandHandler : IFtpCommandHandler
         var endPoint = (IPEndPoint)connection.PassiveSession.Listener.LocalEndpoint;
         
         byte[] address = endPoint.Address.GetAddressBytes();
+        
         short portNumber = (short)endPoint.Port;
 
         byte[] port = BitConverter.GetBytes(portNumber);
@@ -30,4 +28,37 @@ internal class PassiveModeCommandHandler : IFtpCommandHandler
 
         return Task.FromResult(localResponse);
     }
+
+#if false
+
+    private IPAddress? GetIPAddress() // TODO: to be moved
+    {
+        var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+        
+        foreach (var @interface in networkInterfaces)
+        {
+            var isEthernet = @interface.NetworkInterfaceType == NetworkInterfaceType.Ethernet
+                             || @interface.NetworkInterfaceType == NetworkInterfaceType.GigabitEthernet;
+            
+            if (!@interface.Description.Contains("Hyper-V")
+                && isEthernet)
+            {
+                var ipProperties = @interface.GetIPProperties();
+                var ipAddresses = ipProperties.UnicastAddresses;
+                foreach (var ipAddress in ipAddresses)
+                {
+                    // Check if it's an IPv4 address
+                    if (ipAddress.Address.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        return ipAddress.Address;
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+
+#endif
+    
 }
