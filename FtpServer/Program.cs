@@ -1,14 +1,13 @@
-﻿using System;
-using FtpServer;
+﻿using FtpServer;
 using FtpServer.Connection;
 
 // Autofac
 
-using var ftpServer = new MyFtpServer(
-    new FtpConnectionsFactory(),
-    new DefaultConnectionsPool()
+using var hostServer = new HostServer(
+    new ControlConnectionsFactory(),
+    new ControlConnectionsPool()
 );
 
-await ftpServer.StartAsync();
+await hostServer.StartAsync();
 
 Console.WriteLine("Program is completed.");

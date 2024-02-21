@@ -1,9 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text;
 using FtpServer.Connection;
+using FtpServer.Handlers.Basics;
+using FtpServer.Handlers.Type;
 
 namespace FtpServer.Handlers;
 
@@ -11,45 +9,45 @@ internal class RetrieveCommandHandler : IFtpCommandHandler
 {
     public async Task<string> HandleAsync(
         FtpCommand command,
-        IFtpConnection connection,
+        IControlConnection connection,
         CancellationToken token = default)
     {
         const string localResponse = "150 Opening data transfer for RETR.";
         await connection.SendAsync(localResponse, token);
-
-        await connection.PassiveSession.InitInteractionAsync(token);
-
-        using (connection.PassiveSession)
+        
+        await connection.DataConnection.OpenAsync(token);
+        
+        using (connection.DataConnection)
         {
-            var outputStream = connection.PassiveSession.GetStream();
-
+            var outputStream = connection.DataConnection.GetStream();
+            
             var filePath = connection.PositionTracker.GetPath(command.Value);
             await using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-
-            await CopyStreamAsync(connection.TransferType, fileStream, outputStream, token);
+            
+            await CopyStreamAsync(connection.CodingType, fileStream, outputStream, token);
         }
-
+        
         return "226 Transfer complete";
     }
-
+    
     private static Task CopyStreamAsync(
-        TransferType transferType,
+        CodingType codingType,
         Stream input,
         Stream output,
         CancellationToken token = default)
-        => transferType switch
+        => codingType switch
         {
-            TransferType.Ascii => CopyStreamAsciiAsync(input, output, token),
-            TransferType.Binary => CopyStreamBinaryAsync(input, output, token),
-            _ => throw new ArgumentException($"Unsupported transfer type: {transferType}.")
+            CodingType.Ascii => CopyStreamAsciiAsync(input, output, token),
+            CodingType.Binary => CopyStreamBinaryAsync(input, output, token),
+            _ => throw new ArgumentException($"Unsupported coding type: {codingType}.")
         };
-
+    
     private static Task CopyStreamBinaryAsync(
         Stream input,
         Stream output,
         CancellationToken token = default)
         => input.CopyToAsync(output, token);
-
+    
     private static async Task CopyStreamAsciiAsync(
         Stream input,
         Stream output,
@@ -57,7 +55,7 @@ internal class RetrieveCommandHandler : IFtpCommandHandler
     {
         using var reader = new StreamReader(input, Encoding.ASCII);
         await using var writer = new StreamWriter(output, Encoding.ASCII);
-
-        await reader.BaseStream.CopyToAsync(writer.BaseStream, token);;
+        
+        await reader.BaseStream.CopyToAsync(writer.BaseStream, token);
     }
 }

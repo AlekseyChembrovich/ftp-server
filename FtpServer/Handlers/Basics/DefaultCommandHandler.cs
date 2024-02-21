@@ -1,14 +1,12 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using FtpServer.Connection;
+﻿using FtpServer.Connection;
 
-namespace FtpServer.Handlers;
+namespace FtpServer.Handlers.Basics;
 
 internal interface IFtpCommandHandler
 {
     Task<string> HandleAsync(
         FtpCommand command,
-        IFtpConnection connection,
+        IControlConnection connection,
         CancellationToken token = default);
 }
 
@@ -16,7 +14,7 @@ internal class DefaultFtpCommandHandler : IFtpCommandHandler
 {
     public Task<string> HandleAsync(
         FtpCommand command,
-        IFtpConnection connection,
+        IControlConnection connection,
         CancellationToken token = default)
     {
         return Task.FromResult(command.ToResponse());

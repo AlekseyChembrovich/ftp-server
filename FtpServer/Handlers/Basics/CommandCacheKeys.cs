@@ -1,4 +1,4 @@
-﻿namespace FtpServer.Handlers;
+﻿namespace FtpServer.Handlers.Basics;
 
 public static class CommandCacheKeys
 {

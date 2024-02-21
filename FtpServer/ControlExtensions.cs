@@ -1,4 +1,6 @@
-﻿namespace FtpServer;
+﻿using FtpServer.Handlers.Type;
+
+namespace FtpServer;
 
 internal static class ControlExtensions
 {
@@ -10,22 +12,22 @@ internal static class ControlExtensions
         FtpCommandType.PWD => "257 /",
         _ => $"502 Command {command.Type.ToString()} not implemented."
     };
-
+    
     public static FtpCommand ParseFtpCommand(this string line)
     {
         var pair = line.Split(' ');
         var type = ParseFtpCommandType(pair.First());
-
+        
         return new FtpCommand(type, pair.Last());
     }
-
-    public static TransferType ParseTransferType(this string value) => value switch
+    
+    public static CodingType ParseCodingType(this string value) => value switch
     {
-        "A" => TransferType.Ascii,
-        "I" => TransferType.Binary,
-        _ => throw new ArgumentException($"Unsupported transfer type: {value}.")
+        "A" => CodingType.Ascii,
+        "I" => CodingType.Binary,
+        _ => throw new ArgumentException($"Unsupported coding type: {value}.")
     };
-
+    
     private static FtpCommandType ParseFtpCommandType(string command) => command.ToLower() switch
     {
         "opts" => FtpCommandType.OPTS,

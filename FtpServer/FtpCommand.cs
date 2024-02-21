@@ -11,7 +11,7 @@ internal enum FtpCommandType
     SYST,
     PWD,
     CWD,
-    PORT, // TODO: need to be implemented
+    PORT,
     PASV,
     LIST,
     RETR,
@@ -21,13 +21,8 @@ internal enum FtpCommandType
     DELE,
     MKD,
     SIZE,
+    QUIT,
     NONE
-}
-
-internal enum TransferType
-{
-    Ascii,
-    Binary
 }
 
 internal record struct FtpCommand(FtpCommandType Type, string Value);

@@ -1,34 +1,32 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Channels;
-using System.Threading.Tasks;
+﻿using System.Threading.Channels;
 
 namespace FtpServer.Connection;
 
-
-internal interface IConnectionsPool : IDisposable
+internal interface IControlConnectionsPool : IDisposable
 {
-    Task PassConnectionAsync(IFtpConnection connection, CancellationToken token = default);
+    Task PassConnectionAsync(IControlConnection connection, CancellationToken token = default);
 }
 
-internal class DefaultConnectionsPool : IConnectionsPool
+internal class ControlConnectionsPool : IControlConnectionsPool
 {
-    private readonly Channel<IFtpConnection> _connectionsChannel;
+    private readonly Channel<IControlConnection> _connectionsChannel;
     private readonly Task _connectionsProcessingTask;
     
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly CancellationToken _cancellationToken;
-
-    public DefaultConnectionsPool()
+    
+    public ControlConnectionsPool()
     {
-        _connectionsChannel = Channel.CreateUnbounded<IFtpConnection>();   
+        _connectionsChannel = Channel.CreateUnbounded<IControlConnection>();   
         _connectionsProcessingTask = ProcessConnectionsAsync();
         _cancellationToken = _cancellationTokenSource.Token;
     }
-
-    public Task PassConnectionAsync(IFtpConnection connection, CancellationToken token = default) =>
-        _connectionsChannel.Writer.WriteAsync(connection, token).AsTask();
-
+    
+    public Task PassConnectionAsync(IControlConnection connection, CancellationToken token = default)
+        => _connectionsChannel.Writer
+            .WriteAsync(connection, token)
+            .AsTask();
+    
     private async Task ProcessConnectionsAsync()
     {
         var stream = _connectionsChannel.Reader.ReadAllAsync(_cancellationToken);
@@ -39,7 +37,7 @@ internal class DefaultConnectionsPool : IConnectionsPool
             async (connection, token) => await connection.BeginInteractionAsync(token)
         );
     }
-
+    
     public void Dispose()
     {
         _cancellationTokenSource.Cancel();

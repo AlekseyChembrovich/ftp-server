@@ -1,6 +1,5 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using FtpServer.Connection;
+﻿using FtpServer.Connection;
+using FtpServer.Handlers.Basics;
 
 namespace FtpServer.Handlers;
 
@@ -8,7 +7,7 @@ internal class ChangeDirectoryCommandHandler : IFtpCommandHandler
 {
     public Task<string> HandleAsync(
         FtpCommand command,
-        IFtpConnection connection,
+        IControlConnection connection,
         CancellationToken token = default)
     {
         connection.PositionTracker.Change(command.Value);

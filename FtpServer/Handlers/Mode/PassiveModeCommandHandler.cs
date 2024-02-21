@@ -1,31 +1,32 @@
 ﻿using System.Net;
 using FtpServer.Connection;
+using FtpServer.Connection.Data;
+using FtpServer.Handlers.Basics;
 
-namespace FtpServer.Handlers;
+namespace FtpServer.Handlers.Mode;
 
 internal class PassiveModeCommandHandler : IFtpCommandHandler
 {
     public Task<string> HandleAsync(
         FtpCommand command,
-        IFtpConnection connection,
+        IControlConnection connection,
         CancellationToken token = default)
     {
-        connection.PassiveSession.Start(); // TODO: fix naming
+        connection.SetupDataConnection(DataConnectionMode.Passive, IPAddress.Any, 0);
+        // await connection.DataConnection.StartAsync(token);
+        var endPoint = connection.DataConnection.DesignatedEndpoint;
         
-        var endPoint = (IPEndPoint)connection.PassiveSession.Listener.LocalEndpoint;
+        var address = endPoint.Address.GetAddressBytes();
+        var portNumber = (short)endPoint.Port;
         
-        byte[] address = endPoint.Address.GetAddressBytes();
-        
-        short portNumber = (short)endPoint.Port;
-
-        byte[] port = BitConverter.GetBytes(portNumber);
+        var port = BitConverter.GetBytes(portNumber);
         if (BitConverter.IsLittleEndian)
             Array.Reverse(port);
-
+        
         var localResponse = string.Format(
             "227 Entering Passive Mode ({0},{1},{2},{3},{4},{5})",
             address[0], address[1], address[2], address[3], port[0], port[1]);
-
+        
         return Task.FromResult(localResponse);
     }
 

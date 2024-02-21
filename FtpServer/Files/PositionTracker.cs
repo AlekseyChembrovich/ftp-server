@@ -1,9 +1,6 @@
-﻿using System;
-using System.IO;
+﻿namespace FtpServer.Files;
 
-namespace FtpServer.Files;
-
-internal interface IPositionTracker
+internal interface IDirectoryPositionTracker
 {
     string CurrentPath { get; }
     
@@ -12,14 +9,14 @@ internal interface IPositionTracker
     string GetPath(string path);
 }
 
-internal class PositionTracker : IPositionTracker
+internal class DirectoryPositionTracker : IDirectoryPositionTracker
 {
     private const string RootDir = "root";
     private static readonly string RootPath = Path.Combine(Environment.CurrentDirectory, RootDir);
     
     public string CurrentPath { get; private set; } = Path.Combine(RootPath, string.Empty);
     
-    public PositionTracker()
+    public DirectoryPositionTracker()
     {
         if (!Path.Exists(RootPath))
         {

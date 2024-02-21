@@ -1,20 +1,19 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
 using FtpServer.Connection;
 
 namespace FtpServer;
 
-internal class MyFtpServer : IDisposable
+internal class HostServer : IDisposable
 {
     private readonly TcpListener _listener;
     
-    private readonly IConnectionsFactory _connectionsFactory;
-    private readonly IConnectionsPool _connectionsPool;
-
-    public MyFtpServer(IConnectionsFactory connectionsFactory, IConnectionsPool connectionsPool)
+    private readonly IControlConnectionsFactory _connectionsFactory;
+    private readonly IControlConnectionsPool _connectionsPool;
+    
+    public HostServer(
+        IControlConnectionsFactory connectionsFactory,
+        IControlConnectionsPool connectionsPool)
     {
         _listener = new TcpListener(IPAddress.Any, 21);
         _listener.Start();
@@ -31,14 +30,13 @@ internal class MyFtpServer : IDisposable
             while (!token.IsCancellationRequested)
             {
                 var client = await _listener.AcceptTcpClientAsync(token);
-
+                
                 var ad1 = (IPEndPoint)client.Client.RemoteEndPoint;
                 var ad2 = (IPEndPoint)client.Client.LocalEndPoint;
                 
                 Console.WriteLine($"Received a client. {ad1.Address.ToString()}:{ad1.Port}       {ad2.Address.ToString()}:{ad2.Port}");
-                var networkStream = client.GetStream();
-
-                var newConnection = _connectionsFactory.Create(networkStream);
+                
+                var newConnection = _connectionsFactory.Create(client);
                 
                 Console.WriteLine("New connection is created.");
                 
@@ -56,9 +54,11 @@ internal class MyFtpServer : IDisposable
             throw;
         }
     }
-
+    
     public void Dispose()
     {
-        throw new NotImplementedException();
+        _listener.Stop();
+        _listener.Dispose();
+        _connectionsPool.Dispose();
     }
 }

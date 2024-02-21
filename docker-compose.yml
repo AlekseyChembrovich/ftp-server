@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  ftp_server:
+    container_name: ftp_server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    network_mode: host

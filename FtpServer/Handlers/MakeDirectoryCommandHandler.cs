@@ -1,7 +1,5 @@
-﻿using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using FtpServer.Connection;
+﻿using FtpServer.Connection;
+using FtpServer.Handlers.Basics;
 
 namespace FtpServer.Handlers;
 
@@ -9,7 +7,7 @@ internal class MakeDirectoryCommandHandler : IFtpCommandHandler
 {
     public Task<string> HandleAsync(
         FtpCommand command,
-        IFtpConnection connection,
+        IControlConnection connection,
         CancellationToken token = default)
     {
         var path = connection.PositionTracker.GetPath(command.Value);

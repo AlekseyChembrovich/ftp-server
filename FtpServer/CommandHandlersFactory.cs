@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
-using FtpServer.Files;
+﻿using FtpServer.Files;
 using FtpServer.Handlers;
+using FtpServer.Handlers.Basics;
+using FtpServer.Handlers.Mode;
 using FtpServer.Handlers.Rename;
+using FtpServer.Handlers.Type;
 
 namespace FtpServer;
 
@@ -17,6 +19,7 @@ internal class CommandHandlersFactory : ICommandHandlersFactory
         {
             { FtpCommandType.TYPE, new TypeCommandHandler() },
             { FtpCommandType.CWD, new ChangeDirectoryCommandHandler() },
+            { FtpCommandType.PORT, new ActiveModeCommandHandler() },
             { FtpCommandType.PASV, new PassiveModeCommandHandler() },
             { FtpCommandType.LIST, new ListCommandHandler(new FilesRepository()) },
             { FtpCommandType.RETR, new RetrieveCommandHandler() },
